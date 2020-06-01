@@ -60,11 +60,11 @@ $(document).ready(function () {
                             if ($(item).attr('data-line-id') === line_id) {
                                 $(item).removeClass('d-none');
                             }
-                        })
-                        counter.find(`option`).removeAttr('disabled').removeClass('checked_option')
+                        });
+                        counter.find(`option`).removeAttr('disabled').removeClass('checked_option');
                         $.each(res.checked[line_id], function (i, item) {
-                            counter.find(`option[value=${item}]`).attr('disabled', 'disabled').addClass('checked_option')
-                        })
+                            counter.find(`option[value=${item}]`).attr('disabled', 'disabled').addClass('checked_option');
+                        });
                     });
                     countRun = false;
                 }
@@ -73,7 +73,10 @@ $(document).ready(function () {
     });
     $(document).on('change', '#film-checked-lines-count', function () {
         let form = $('#checked_film_form').serializeArray();
-        console.log(form)
+        let sendData = new FormData();
+        $.each(form, function (i, item) {
+            sendData.append(item.name, item.value)
+        });
         $.confirm({
             title: 'Confirm!',
             content: 'Simple confirm!',
@@ -82,12 +85,24 @@ $(document).ready(function () {
                     text: 'OK',
                     btnClass: 'btn-blue',
                     action: function () {
-                        main.find('div').remove();
-                        $.alert('ok');
-                        $('#films_all option').removeAttr('selected');
-                        $('#films_all .default_selected').attr({
-                            'selected': 'selected',
-                            'disabled': 'disabled',
+                        fetch(window.location.origin + '/checked', {
+                            headers: {
+                                "X-CSRF-Token": $('meta[name="csrf_token"]').attr('content')
+                            },
+                            method: 'POST',
+                            body: sendData,
+                        }).then(response => {
+                            return response.json();
+                        }).then((res) => {
+                            if (res.success) {
+                                main.find('div').remove();
+                                $('#films_all option').removeAttr('selected');
+                                $('#films_all .default_selected').attr({
+                                    'selected': 'selected',
+                                    'disabled': 'disabled',
+                                });
+                                $.alert(res.card);
+                            }
                         });
                     }
                 },

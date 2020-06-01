@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Helpers\Hash;
 use App\Models\Checked;
 use App\Models\CountLine;
 use App\Models\DateFilm;
@@ -58,5 +59,18 @@ class FilmController extends Controller
         }
         $lines = Line::all()->load('counter');
         return response()->json(['success' => true, 'lines' => $lines, 'checked' => $checked_lines]);
+    }
+
+    public function checked(Request $request)
+    {
+        $checked = new Checked();
+
+        $checked->film_id = $request->input('film');
+        $checked->date_film_id = $request->input('date');
+        $checked->count_line_id = $request->input('count');
+        $checked->count_line_id = $request->input('count');
+        $checked->card = Hash::unique(new Checked(), 'card', 5);
+        $checked->save();
+        return response()->json(['success' => true, 'card' => $checked->card], 201);
     }
 }

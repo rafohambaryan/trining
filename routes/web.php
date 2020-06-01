@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/', 'FilmController@index');
 Route::post('/', 'FilmController@getFilm');
 Route::post('/date', 'FilmController@getFilmDate');
+Route::post('/checked', 'FilmController@checked');
 
 Auth::routes();
 
