@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Helpers\Hash;
 use App\Models\Checked;
-use App\Models\CountLine;
 use App\Models\DateFilm;
 use App\Models\Film;
 use App\Models\Line;
@@ -15,7 +14,8 @@ class FilmController extends Controller
     public function index()
     {
         $films = Film::all();
-        return view('films', compact('films'));
+        $lines = Line::all();
+        return view('films', compact('films', 'lines'));
     }
 
     public function getFilm(Request $request)
@@ -47,11 +47,11 @@ class FilmController extends Controller
         $newArr = true;
         $last_id = 0;
         foreach ($checked as $item) {
-            if ($item->count_line->line->id !== $last_id) {
+            if ($item->count_line->line->id !== $last_id && !isset($checked_lines[$item->count_line->line->id])) {
+                $checked_lines[$item->count_line->line->id] = [];
                 $newArr = true;
             }
             if ($newArr) {
-                $checked_lines[$item->count_line->line->id] = [];
                 $newArr = false;
                 $last_id = $item->count_line->line->id;
             }
@@ -63,14 +63,19 @@ class FilmController extends Controller
 
     public function checked(Request $request)
     {
-        $checked = new Checked();
-
-        $checked->film_id = $request->input('film');
-        $checked->date_film_id = $request->input('date');
-        $checked->count_line_id = $request->input('count');
-        $checked->count_line_id = $request->input('count');
-        $checked->card = Hash::unique(new Checked(), 'card', 5);
-        $checked->save();
-        return response()->json(['success' => true, 'card' => $checked->card], 201);
+        $film_id = $request->input('film');
+        $date_film_id = $request->input('date');
+        $count_line_id = $request->input('count');
+        $checkedUnique = Checked::where('film_id', $film_id)->where('date_film_id', $date_film_id)->where('count_line_id', $count_line_id)->first();
+        if (!$checkedUnique) {
+            $checked = new Checked();
+            $checked->film_id = $request->input('film');
+            $checked->date_film_id = $request->input('date');
+            $checked->count_line_id = $request->input('count');
+            $checked->card = Hash::unique($checked, 'card', 5);
+            $checked->save();
+            return response()->json(['success' => true, 'card' => $checked->card], 201);
+        }
+        return response()->json(['success' => false]);
     }
 }

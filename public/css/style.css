@@ -1,6 +1,38 @@
-.films-content div{
+.films-content div {
     margin-top: 10px;
 }
-.checked_option{
+
+.checked_option {
     background-color: #ff6767;
+}
+
+.costume_table {
+    margin: 25px auto;
+}
+
+.costume_table td {
+    border: 1px solid black;
+    padding: 15px;
+}
+
+.costume_table th {
+    border-bottom: 1px solid black;
+    padding: 0 15px;
+}
+
+.checked {
+    background-color: red !important;
+    cursor: no-drop;
+}
+
+.no-checked {
+    background-color: green !important;
+    cursor: pointer;
+}
+.checked:hover{
+    background-color: #a50303 !important;
+}
+
+.no-checked:hover {
+    background-color: #016101 !important;
 }

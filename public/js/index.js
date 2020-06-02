@@ -1,48 +1,61 @@
+function select(_class, name, id, text) {
+    return `<div class="${_class}">
+                   <select name="${name}" id="${id}" class="form-control form-control-lg">
+                        <option disabled selected>${text}</option>
+                   </select>
+               </div>`;
+}
+
+function ajax(method, url, data = new FormData()) {
+    let http = new XMLHttpRequest();
+    http.open(method, window.location.origin + url, false);
+    http.setRequestHeader("X-CSRF-Token", document.getElementsByName('csrf_token')[0].content);
+    http.send(data)
+    return JSON.parse(http.response);
+}
+
+var app = new Map();
+var http = new FormData();
 $(document).ready(function () {
+    var table = $('.costume_table');
     let main = $('.films-content');
-    let countRun = true;
     $(document).on('change', '#films_all', function () {
         let film_id = $(this).val();
-        fetch(window.location.origin, {
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "X-Requested-With": "XMLHttpRequest",
-                "X-CSRF-Token": $('meta[name="csrf_token"]').attr('content')
-            },
-            method: 'POST',
-            body: JSON.stringify({film_id: film_id}),
-        }).then(response => {
-            return response.json();
-        }).then((res) => {
+        http.append('film_id', film_id)
+        let res = ajax('post', '', http);
+        if (res) {
+            table.find('td').removeClass('no-checked').removeClass('checked');
             main.find('div').remove();
+            http = new FormData();
             if (res.success) {
-                main.append('<div class="film-date"><select class="form-control form-control-lg" name="date" id="film_date_select"><option disabled selected>Selected Date</option></select></div>')
+                main.append(select('film-date', 'date', 'film_date_select', 'Selected Date'))
                 $.each(res.data, function (i, item) {
                     $('.film-date select').append(`<option value="${item.id}">${item.start_date} - ${item.end_date}</option>`);
                 });
             }
-        });
+        }
     });
     $(document).on('change', '#film_date_select', function () {
         let date_id = $(this).val();
-        fetch(window.location.origin + '/date', {
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "X-Requested-With": "XMLHttpRequest",
-                "X-CSRF-Token": $('meta[name="csrf_token"]').attr('content')
-            },
-            method: 'POST',
-            body: JSON.stringify({date_id: date_id}),
-        }).then(response => {
-            return response.json();
-        }).then((res) => {
+        http.append('date_id', date_id);
+        let res = ajax('POST', '/date', http);
+        if (res) {
+            http = new FormData();
             main.find('.film-checked-lines').remove();
             main.find('.film-checked-lines-count').remove();
+            app.set('checked', []);
+            table.find('td').removeClass('no-checked').removeClass('checked')
             if (res.success) {
-                main.append('<div class="film-checked-lines"><select class="form-control form-control-lg" name="line" id="film_checked_lines_select"><option disabled selected>Selected Lines</option></select></div>')
-                main.append('<div class="film-checked-lines-count d-none"><select class="form-control form-control-lg" name="count" id="film-checked-lines-count"><option disabled selected>Selected Chair</option></select></div>')
+                table.find('td').addClass('no-checked')
+                $.each(res.checked, function (i, item) {
+                    $.each(item, function (j, count) {
+                        console.log(table.find(`td[data-id=${count}]`))
+                        table.find(`td[data-id=${count}]`).removeClass('no-checked').addClass('checked')
+                    })
+                })
+                app.set('checked', res.checked);
+                main.append(select('film-checked-lines', 'line', 'film_checked_lines_select', 'Selected Lines'))
+                main.append(select('film-checked-lines-count d-none', 'count', 'film-checked-lines-count', 'Selected Chair'))
 
                 $.each(res.lines, function (i, item) {
                     $('.film-checked-lines select').append(`<option value="${item.id}">${item.name} - ${item.order}</option>`);
@@ -50,50 +63,42 @@ $(document).ready(function () {
                         $('.film-checked-lines-count select').append(`<option value="${count.id}" data-line-id="${item.id}" class="d-none">${count.order}</option>`);
                     })
                 });
-                if (countRun || 1) {
-                    $(document).on('change', '#film_checked_lines_select', function () {
-                        let counter = $('.film-checked-lines-count');
-                        counter.removeClass('d-none');
-                        let line_id = $(this).val();
-                        counter.find('option').addClass('d-none');
-                        $.each(counter.find('option'), function (i, item) {
-                            if ($(item).attr('data-line-id') === line_id) {
-                                $(item).removeClass('d-none');
-                            }
-                        });
-                        counter.find(`option`).removeAttr('disabled').removeClass('checked_option');
-                        $.each(res.checked[line_id], function (i, item) {
-                            counter.find(`option[value=${item}]`).attr('disabled', 'disabled').addClass('checked_option');
-                        });
-                    });
-                    countRun = false;
-                }
+            }
+        }
+    });
+    $(document).on('change', '#film_checked_lines_select', function () {
+        let counter = $('.film-checked-lines-count');
+        counter.removeClass('d-none');
+        let line_id = $(this).val();
+        counter.find('option').addClass('d-none');
+        $.each(counter.find('option'), function (i, item) {
+            if ($(item).attr('data-line-id') === line_id) {
+                $(item).removeClass('d-none');
             }
         });
+        counter.find(`option`).removeAttr('disabled').removeClass('checked_option');
+        $.each(app.get('checked')[line_id], function (i, item) {
+            counter.find(`option[value=${item}]`).attr('disabled', 'disabled').addClass('checked_option');
+        });
     });
+
     $(document).on('change', '#film-checked-lines-count', function () {
         let form = $('#checked_film_form').serializeArray();
-        let sendData = new FormData();
         $.each(form, function (i, item) {
-            sendData.append(item.name, item.value)
+            http.append(item.name, item.value)
         });
+        console.log(form);
         $.confirm({
-            title: 'Confirm!',
-            content: 'Simple confirm!',
+            title: 'Attention!',
+            content: 'you buy new toms',
             buttons: {
                 somethingElse: {
                     text: 'OK',
                     btnClass: 'btn-blue',
                     action: function () {
-                        fetch(window.location.origin + '/checked', {
-                            headers: {
-                                "X-CSRF-Token": $('meta[name="csrf_token"]').attr('content')
-                            },
-                            method: 'POST',
-                            body: sendData,
-                        }).then(response => {
-                            return response.json();
-                        }).then((res) => {
+                        let res = ajax('POST', '/checked', http);
+                        if (res) {
+                            http = new FormData();
                             if (res.success) {
                                 main.find('div').remove();
                                 $('#films_all option').removeAttr('selected');
@@ -101,9 +106,12 @@ $(document).ready(function () {
                                     'selected': 'selected',
                                     'disabled': 'disabled',
                                 });
-                                $.alert(res.card);
+                                $.alert({
+                                    'title': 'toms number:',
+                                    content: res.card
+                                });
                             }
-                        });
+                        }
                     }
                 },
                 cancel: function () {
@@ -111,5 +119,54 @@ $(document).ready(function () {
                 },
             }
         });
+    });
+    $(document).on('click', '.no-checked', function () {
+        let count_id = $(this).attr('data-id');
+        let _this = $(this);
+        http.append('count', count_id)
+        let form = $('#checked_film_form').serializeArray();
+        $.each(form, function (i, item) {
+            if (item.name === 'count') {
+                return false;
+            }
+            http.append(item.name, item.value)
+        });
+        $.confirm({
+            title: 'Attention!',
+            content: 'you buy new toms',
+            buttons: {
+                somethingElse: {
+                    text: 'OK',
+                    btnClass: 'btn-blue',
+                    action: function () {
+                        let res = ajax('POST', '/checked', http);
+                        if (res) {
+                            http = new FormData();
+                            if (res.success) {
+                                _this.removeClass('no-checked').addClass('checked')
+                                $.alert({
+                                    'title': 'toms number:',
+                                    content: res.card
+                                });
+                            } else {
+                                table.find('td').addClass('no-checked')
+                                $.each(app.get('checked'), function (i, item) {
+                                    $.each(item, function (j, count) {
+                                        console.log(table.find(`td[data-id=${count}]`))
+                                        table.find(`td[data-id=${count}]`).removeClass('no-checked').addClass('checked')
+                                    })
+                                })
+                                $.alert('Error')
+                            }
+                        }
+                    }
+                },
+                cancel: function () {
+                    return true;
+                },
+            }
+        });
+
+
     })
 })
