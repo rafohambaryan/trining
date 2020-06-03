@@ -16,8 +16,9 @@ class CreateDateFilmsTable extends Migration
         Schema::create('date_films', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('film_id');
-            $table->dateTime('start_date');
-            $table->dateTime('end_date');
+            $table->string('start_date');
+            $table->string('end_date');
+            $table->bigInteger('order');
             $table->timestamps();
             $table->foreign('film_id')->references('id')->on('films')->onDelete('CASCADE')->onUpdate('CASCADE');
         });

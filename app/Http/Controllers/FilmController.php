@@ -11,6 +11,9 @@ use Illuminate\Http\Request;
 
 class FilmController extends Controller
 {
+    /**
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function index()
     {
         $films = Film::all();
@@ -18,6 +21,10 @@ class FilmController extends Controller
         return view('films', compact('films', 'lines'));
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getFilm(Request $request)
     {
         $film_id = $request->input('film_id');
@@ -36,7 +43,10 @@ class FilmController extends Controller
         return response()->json(['success' => false, 'messages' => ['porceq mi poqr ush']]);
     }
 
-
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getFilmDate(Request $request)
     {
         $checked_lines = [];
@@ -61,6 +71,10 @@ class FilmController extends Controller
         return response()->json(['success' => true, 'lines' => $lines, 'checked' => $checked_lines]);
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function checked(Request $request)
     {
         $film_id = $request->input('film');

@@ -6037,7 +6037,7 @@ a.close.disabled {
 
 @media (min-width: 576px) {
     .modal-dialog {
-        max-width: 500px;
+        max-width: 70%;
         margin: 1.75rem auto;
     }
 
@@ -10878,16 +10878,88 @@ body {
     width: 150px !important;
 }
 
-.remove-date-film-content {
+.remove-date-film-content, .delete-film {
     cursor: pointer;
     color: red;
 }
 
-.add-new-date-line-film {
+.add-new-date-line-film, .update-film {
     cursor: pointer;
     color: green;
 }
 
 .add-error-border {
     border: 1px solid red;
+}
+
+.bg-green {
+    background-color: rgba(0, 128, 0, 0.63) !important;
+}
+
+.get-checked-film {
+    cursor: pointer;
+    color: #003a80;
+}
+
+.checked {
+    background-color: green;
+    cursor: pointer;
+}
+
+.no-checked {
+    background-color: red;
+    cursor: pointer;
+}
+
+.checked:hover{
+    background-color: rgba(0, 128, 0, 0.67);
+}
+
+.no-checked:hover{
+    background-color: rgba(255, 0, 0, 0.74);
+}
+#exampleModalCenter .append-content-modal .costume_table{
+    margin: 15px 0;
+}
+
+#exampleModalCenter .append-content-modal .costume_table td {
+    border: 1px solid black;
+    padding: 5px 12px
+}
+
+#exampleModalCenter .append-content-modal .costume_table th {
+    border-bottom: 1px solid black;
+    padding: 0 15px;
+}
+
+.line-delete{
+    color: red;
+    cursor: pointer;
+}
+.line-delete:hover{
+    color: #c20000;
+}
+.line-edit{
+    color: green;
+    cursor: pointer;
+}
+.line-edit:hover{
+    color: #016a01;
+}
+
+
+
+
+.hall-content .costume_table{
+    margin: 15px 0;
+}
+
+.hall-content .costume_table td {
+    border: 1px solid black;
+    padding: 5px 12px
+}
+
+.hall-content .costume_table th {
+    border-bottom: 1px solid black;
+    padding: 0 15px;
 }

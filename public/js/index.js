@@ -30,7 +30,7 @@ $(document).ready(function () {
             if (res.success) {
                 main.append(select('film-date', 'date', 'film_date_select', 'Selected Date'))
                 $.each(res.data, function (i, item) {
-                    $('.film-date select').append(`<option value="${item.id}">${item.start_date} - ${item.end_date}</option>`);
+                    $('.film-date select').append(`<option value="${item.id}">${(new Date(item.start_date)).toLocaleString()} - ${(new Date(item.end_date)).toLocaleString()}</option>`);
                 });
             }
         }

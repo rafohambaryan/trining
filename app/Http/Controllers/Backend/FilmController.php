@@ -4,49 +4,40 @@ namespace App\Http\Controllers\Backend;
 
 use App\Models\DateFilm;
 use App\Models\Film;
+use App\Repository\Backend\Interfaces\FilmRepositoryInterfaces;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
-class HomeController extends Controller
+class FilmController extends Controller
 {
     /**
-     * Create a new controller instance.
-     *
-     * @return void
+     * @var FilmRepositoryInterfaces
      */
-    public function __construct()
-    {
-        $this->middleware('auth');
-    }
+    protected $interfaces;
 
     /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
+     * FilmController constructor.
+     * @param FilmRepositoryInterfaces $interfaces
      */
-    public function index()
+    public function __construct(FilmRepositoryInterfaces $interfaces)
     {
-        return view('backend.index');
+        $this->middleware('auth');
+        $this->interfaces = $interfaces;
     }
 
     /**
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-
     public function films()
     {
-        $films = Film::all();
-        return view('backend.films', compact('films'));
+        return view('backend.films', ['films' => $this->interfaces->get()]);
     }
 
-    /**
-     * @param Request $request
-     * @param null $id
-     * @return \Illuminate\Http\JsonResponse
-     */
+
     public function createOrUpdate(Request $request, $id = 0)
     {
+
         $name = $request->input('name');
         $description = $request->input('description');
         $film = Film::firstOrNew(['id' => $id, 'user_id' => Auth::id()]);
@@ -88,6 +79,7 @@ class HomeController extends Controller
                 $item->delete();
             }
         }
+        $film = $this->interfaces->createOrUpdate($request->all(), $id);
         $response['success'] = false;
         if ($film) {
             $response['success'] = true;
@@ -96,40 +88,6 @@ class HomeController extends Controller
         return response()->json($response, 201);
     }
 
-    /**
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function deleted(Request $request)
-    {
-        $film_id = $request->input('film_id');
-        $film = Film::find($film_id);
-        if ($film)
-            return response()->json(['success' => true, 'data' => $film->delete()]);
-        return response()->json(['success' => false]);
-    }
-
-    /**
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function get($id)
-    {
-        $film = Film::find($id);
-        if ($film) {
-            return response()->json(['success' => true, 'data' => $film->load('getDate')]);
-        }
-        return response()->json(['success' => false]);
-    }
-
-    /**
-     * @param $start
-     * @param $end
-     * @param $model
-     * @param null $i
-     * @param null $film_id
-     * @return mixed
-     */
     private function addDate($start, $end, $model, $i = null, $film_id = null)
     {
         $model->start_date = $start;
@@ -143,4 +101,5 @@ class HomeController extends Controller
         return $model->save();
 
     }
+
 }

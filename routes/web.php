@@ -21,14 +21,18 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
     Route::post('/checked', 'FilmController@checked');
     Auth::routes([
         'register' => false,
-        'login' => false
+        'login' => false,
+        'password.request' => false,
     ]);
-    Route::group(['prefix' => 'admin'], function () {
-        Route::get('/', 'Auth\LoginController@showLoginForm')->name('login');
-        Route::post('/', 'Auth\LoginController@login');
-        Route::get('/dashboard', 'Backend\HomeController@index');
-        Route::get('/films', 'Backend\HomeController@films');
-        Route::post('/films/{id?}', 'Backend\HomeController@createOrUpdate');
+    Route::get('/admin', 'Auth\LoginController@showLoginForm')->name('login');
+    Route::post('/admin', 'Auth\LoginController@login');
+    Route::group(['prefix' => 'admin', 'namespace' => 'Backend'], function () {
+        Route::get('/dashboard', 'HomeController@index');
+        Route::get('/films', 'FilmController@films');
+        Route::get('/hall', 'HallController@index');
+        Route::get('/films/{id}', 'HomeController@get');
+        Route::post('/films/{id?}', 'HomeController@createOrUpdate');
+        Route::delete('/films/delete', 'HomeController@deleted');
     });
 });
 Route::any('{error}', function ($page) {
