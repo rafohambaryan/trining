@@ -1,50 +1,31 @@
 @extends('backend.layout.app')
+@push('title' ,'Hall')
+@push('page','Hall')
 @section('content')
-    <div id="layoutSidenav_content">
-        <main>
-            <div class="container-fluid">
-                <h1 class="mt-4">Hall</h1>
-                <ol class="breadcrumb mb-4">
-                    <li class="breadcrumb-item"><a href="{{url('/admin/dashboard')}}">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Hall</li>
-                </ol>
-                <div class="card mb-4">
-                    <div class="card-header costume-card-header-film">
-                        <div><i class="fas fa-table mr-1"></i>Hall</div>
-                        <div>
-                            <button class="btn btn-primary add-new-line-hall">New Line</button>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive hall-content">
-                            <table class="costume_table">
-                                @foreach($lines as $line)
-                                    <tr>
-                                        <th><i class="far fa-edit line-edit"></i> <i class="far fa-trash-alt ml-1 mr-1 line-delete"></i>{{$line->name}} N {{$line->order}}</th>
-                                        @foreach($line->counter as $heir)
-                                            <td data-id="{{$heir->id}}">{{$heir->order}}</td>
-                                        @endforeach
-                                    </tr>
-                                @endforeach
-                            </table>
-                        </div>
-                    </div>
-                </div>
+    <div class="card mb-4">
+        <div class="card-header costume-card-header-film">
+            <div><i class="fas fa-table mr-1"></i>Hall</div>
+            <div>
+                <button class="btn btn-primary add-new-line-hall">New Line</button>
             </div>
-        </main>
-        <footer class="py-4 bg-light mt-auto">
-            <div class="container-fluid">
-                <div class="d-flex align-items-center justify-content-between small">
-                    <div class="text-muted">Copyright &copy; Your Website 2019</div>
-                    <div>
-                        <a href="#">Privacy Policy</a>
-                        &middot;
-                        <a href="#">Terms &amp; Conditions</a>
-                    </div>
-                </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive hall-content">
+                <table class="costume_table">
+                    @foreach($lines as $line)
+                        <tr>
+                            <th><i class="far fa-edit line-edit"></i> <i class="far fa-trash-alt ml-1 mr-1 line-delete"></i>{{$line->name}} N {{$line->order}}</th>
+                            @foreach($line->counter as $heir)
+                                <td data-id="{{$heir->id}}">{{$heir->order}}</td>
+                            @endforeach
+                        </tr>
+                    @endforeach
+                </table>
             </div>
-        </footer>
+        </div>
     </div>
+@endsection
+@push('modal')
     <div class="modal fade bd-example-modal-lg" id="hallModalCenter" tabindex="-1" role="dialog"
          aria-labelledby="hallModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -65,7 +46,7 @@
             </div>
         </div>
     </div>
-@endsection
+@endpush
 @push('after-script')
     <script src="{{asset('/backend/js/hall/hall.js')}}"></script>
 @endpush

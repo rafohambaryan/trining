@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Line extends Model
 {
-    public function counter(){
-        return $this->hasMany(CountLine::class,'line_id','id');
+    protected $fillable = [
+        'name','order'
+    ];
+    public function counter()
+    {
+        return $this->hasMany(CountLine::class, 'line_id', 'id');
     }
 }

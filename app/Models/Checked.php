@@ -14,4 +14,14 @@ class Checked extends Model
     {
         return $this->belongsTo(CountLine::class, 'count_line_id', 'id');
     }
+
+    public function film()
+    {
+        return $this->belongsTo(Film::class, 'film_id', 'id');
+    }
+
+    public function date()
+    {
+        return $this->belongsTo(DateFilm::class, 'date_film_id', 'id');
+    }
 }

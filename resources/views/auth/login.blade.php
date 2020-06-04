@@ -8,7 +8,8 @@
     <meta name="author" content=""/>
     <title>Page Title - SB Admin</title>
     <link href="{{asset('/backend/css/styles.css')}}" rel="stylesheet"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/js/all.min.js"
+
+    <script src="{{asset('/backend/js/all.min.js')}}"
             crossorigin="anonymous"></script>
 </head>
 <body class="bg-primary">
@@ -75,9 +76,8 @@
         </main>
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.4.1.min.js" crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"
-        crossorigin="anonymous"></script>
+<script src="{{asset('/backend/js/jquery-3.4.1.min.js')}}"></script>
+<script src="{{asset('/backend/js/bootstrap.bundle.min.js')}}"></script>
 <script src="{{asset('/backend/js/scripts.js')}}"></script>
 </body>
 </html>

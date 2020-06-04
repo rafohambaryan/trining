@@ -10872,6 +10872,7 @@ body {
     max-width: 150px;
     display: flex;
     justify-content: space-between;
+    z-index: 9999;
 }
 
 .max-width-150 {
@@ -10911,20 +10912,21 @@ body {
     cursor: pointer;
 }
 
-.checked:hover{
+.checked:hover {
     background-color: rgba(0, 128, 0, 0.67);
 }
 
-.no-checked:hover{
+.no-checked:hover {
     background-color: rgba(255, 0, 0, 0.74);
 }
-#exampleModalCenter .append-content-modal .costume_table{
+
+#exampleModalCenter .append-content-modal .costume_table {
     margin: 15px 0;
 }
 
 #exampleModalCenter .append-content-modal .costume_table td {
     border: 1px solid black;
-    padding: 5px 12px
+    padding: 5px 8px
 }
 
 #exampleModalCenter .append-content-modal .costume_table th {
@@ -10932,25 +10934,26 @@ body {
     padding: 0 15px;
 }
 
-.line-delete{
+.line-delete {
     color: red;
     cursor: pointer;
 }
-.line-delete:hover{
+
+.line-delete:hover {
     color: #c20000;
 }
-.line-edit{
+
+.line-edit {
     color: green;
     cursor: pointer;
 }
-.line-edit:hover{
+
+.line-edit:hover {
     color: #016a01;
 }
 
 
-
-
-.hall-content .costume_table{
+.hall-content .costume_table {
     margin: 15px 0;
 }
 
@@ -10962,4 +10965,21 @@ body {
 .hall-content .costume_table th {
     border-bottom: 1px solid black;
     padding: 0 15px;
+}
+
+.get-checked-data-admin p {
+    text-align: left;
+}
+
+
+
+
+
+#selectable .ui-selecting {
+    background: rgba(104, 164, 255, 0.4);
+}
+
+#selectable .ui-selected {
+    background: rgba(0, 136, 252, 0.7);
+    color: white;
 }

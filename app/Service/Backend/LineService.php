@@ -4,7 +4,17 @@
 namespace App\Service\Backend;
 
 
-class LineService
-{
+use App\Models\Line;
 
+class LineService extends Line
+{
+    protected $table = 'lines';
+
+    /**
+     * @return LineService[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function get()
+    {
+        return parent::all();
+    }
 }

@@ -33,6 +33,5 @@
 
         </div>
 </div>
-@include('backend.layout.components.footer')
 </nav>
 </div>
