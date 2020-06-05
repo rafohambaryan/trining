@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateLinesTable extends Migration
+class CreateGenreFilmsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,13 @@ class CreateLinesTable extends Migration
      */
     public function up()
     {
-        Schema::create('lines', function (Blueprint $table) {
+        Schema::create('genre_films', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('genre_id');
+            $table->unsignedBigInteger('film_id');
             $table->string('name')->nullable();
-            $table->string('price');
-            $table->bigInteger('order');
+            $table->foreign('genre_id')->references('id')->on('genres')->onUpdate('CASCADE')->onDelete('CASCADE');
+            $table->foreign('film_id')->references('id')->on('films')->onUpdate('CASCADE')->onDelete('CASCADE');
             $table->timestamps();
         });
     }
@@ -29,6 +31,6 @@ class CreateLinesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('lines');
+        Schema::dropIfExists('genre_films');
     }
 }

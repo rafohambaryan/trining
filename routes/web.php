@@ -20,7 +20,7 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
     Route::post('/date', 'FilmController@getFilmDate');
     Route::post('/checked', 'CheckedController@checked');
     Auth::routes([
-        'register' => false,
+//        'register' => false,
         'login' => false,
         'password.request' => false,
         'password.email' => false,
@@ -42,6 +42,11 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
         Route::get('/hall', 'HallController@index');
         //Checked controller
         Route::post('/get-checked', 'CheckedController@getChecked');
+
+        //Genre Controller
+        Route::get('/genres','GenreController@get');
+
+
         //Setting controller
         Route::group(['middleware' => 'role:admin', 'as' => 'settings.'], function () {
             Route::get('/setting', 'SettingController@index')->name('index');

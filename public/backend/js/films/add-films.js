@@ -3,9 +3,21 @@ function addFilmContent(name = '', description = '', data = [], id = 0) {
     $.each(data, function (i, item) {
         date_film += addNewDate(item.start_date, item.end_date)
     })
+    console.log(genres)
+    let genresHtml = '';
+    for (let i = 0; i < genres.length; i++) {
+        genresHtml += `<div>
+                           <label for="genre-${genres[i].id}">${genres[i].name}</label>
+                           <input type="checkbox" name="genre[]" id="genre-${genres[i].id}" value="${genres[i].id}">
+                       </div>`;
+    }
     return `<form class="form-update-or-create">
                 <input type="hidden" value="${id}" name="film_id">
                 <div>
+                    <div class="genre-films">
+                          ${genresHtml}
+                        <hr>
+                    </div>
                     <input type="text" placeholder="Film name" name="name" value="${name}" class="name form-control" />
                     <textarea placeholder="Film description" name="description" class="name form-control mt-2">${description}</textarea>
                     <div class="mt-3 append-new-date-input">
@@ -74,8 +86,11 @@ function printCheckedToms(res, code) {
 
 var app = new Map();
 var click = true;
+var httpGetGenre = new XMLHttpRequest();
+httpGetGenre.open('GET', window.location.origin + '/admin/genres', false);
+httpGetGenre.send();
+var genres = JSON.parse(httpGetGenre.response);
 $(document).ready(function () {
-
     $('#dataTableFilmsList').DataTable();
     $(document).on('click', '.add-new-film', function () {
         if (click) {
@@ -117,6 +132,9 @@ $(document).ready(function () {
             let film_id = 0;
             $.each(form, function (i, item) {
                 switch (item.name) {
+                    case 'genre[]':
+                        formData.append('genre[]', item.value)
+                        break;
                     case 'name':
                         formData.append('name', item.value)
                         if (item.value.length === 0) {

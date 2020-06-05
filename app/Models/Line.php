@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Line extends Model
 {
     protected $fillable = [
-        'name','order'
+        'name','order','price'
     ];
     public function counter()
     {

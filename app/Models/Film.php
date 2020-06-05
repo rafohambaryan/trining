@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Film extends Model
 {
     protected $fillable = [
-      'user_id', 'name', 'description',
+        'user_id', 'name', 'description','genre'
     ];
 
     public function getDate()
