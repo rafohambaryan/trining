@@ -13,7 +13,7 @@
             <div class="table-responsive hall-content">
                 <table class="costume_table">
                     @foreach($lines as $line)
-                        <tr>
+                        <tr class="line-halls-line" data-id="{{$line->id}}">
                             <th><i class="far fa-edit line-edit"></i> <i class="far fa-trash-alt ml-1 mr-1 line-delete"></i>{{$line->name}} N {{$line->order}}</th>
                             @foreach($line->counter as $heir)
                                 <td data-id="{{$heir->id}}">{{$heir->order}}</td>

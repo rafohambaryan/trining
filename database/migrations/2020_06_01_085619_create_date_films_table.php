@@ -19,6 +19,7 @@ class CreateDateFilmsTable extends Migration
             $table->string('start_date');
             $table->string('end_date');
             $table->bigInteger('order');
+            $table->enum('status', ['active', 'passive'])->default('active');
             $table->timestamps();
             $table->foreign('film_id')->references('id')->on('films')->onDelete('CASCADE')->onUpdate('CASCADE');
         });

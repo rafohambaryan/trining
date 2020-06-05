@@ -19,6 +19,7 @@ class CreateCheckedsTable extends Migration
             $table->unsignedBigInteger('count_line_id');
             $table->unsignedBigInteger('date_film_id');
             $table->string('card')->unique();
+            $table->enum('status', ['active', 'passive'])->default('active');
             $table->timestamps();
             $table->foreign('film_id')->references('id')->on('films')->onDelete('CASCADE')->onUpdate('CASCADE');
             $table->foreign('count_line_id')->references('id')->on('count_lines')->onDelete('CASCADE')->onUpdate('CASCADE');
