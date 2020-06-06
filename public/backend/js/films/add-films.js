@@ -1,17 +1,23 @@
-function addFilmContent(name = '', description = '', data = [], id = 0) {
+function addFilmContent(name = '', description = '', data = [], id = 0, genre = []) {
     let date_film = '';
+    let datePickerArray = [];
     $.each(data, function (i, item) {
-        date_film += addNewDate(item.start_date, item.end_date)
-    })
-    console.log(genres)
+        var dateRangePicker = addNewDate(item.start_date + ' - ' + item.end_date);
+        date_film += dateRangePicker[0];
+        datePickerArray.push(dateRangePicker[1])
+    });
+    let genreArr = [];
+    $.each(genre, function (i, item) {
+        genreArr.push(item.genre_id)
+    });
     let genresHtml = '';
     for (let i = 0; i < genres.length; i++) {
-        genresHtml += `<div>
+        genresHtml += `<div class="checked-jquery-ui">
                            <label for="genre-${genres[i].id}">${genres[i].name}</label>
-                           <input type="checkbox" name="genre[]" id="genre-${genres[i].id}" value="${genres[i].id}">
+                           <input type="checkbox" name="genre[]" id="genre-${genres[i].id}" value="${genres[i].id}" ${genreArr.includes(genres[i].id) ? 'checked' : ''}>
                        </div>`;
     }
-    return `<form class="form-update-or-create">
+    let html = `<form class="form-update-or-create">
                 <input type="hidden" value="${id}" name="film_id">
                 <div>
                     <div class="genre-films">
@@ -26,21 +32,22 @@ function addFilmContent(name = '', description = '', data = [], id = 0) {
                          ${date_film}
                     </div>
                 </div>
-            </form>`
+            </form>`;
+    return [html, datePickerArray];
 }
 
-function addNewDate(start = '', end = '') {
-    return `<div class="add-new-date">
-                <div>
-                  <input type="datetime-local" name="start_date[]" value="${start}" class="form-control">
-                </div>
-                <div>
-                  <input type="datetime-local" name="end_date[]" value="${end}" class="form-control ml-3">
-                </div>
-                <div>
-                    <a><i class="fas fa-trash-alt remove-date-film-content"></i></a>
-                </div>
-            </div>`;
+function addNewDate(date = '') {
+    let time = (new Date()).getTime() + Math.floor(Math.random() * 999999999999);
+    let html = `<div class="add-new-date">
+                      <div>
+                        <input type="text" name="date-to-date[]" value="${date}" class="form-control data-picker-${time} date-picker-class-css" placeholder="change date ... ">
+                      </div>
+
+                      <div>
+                          <a><i class="fas fa-trash-alt remove-date-film-content"></i></a>
+                      </div>
+                  </div>`;
+    return [html, 'data-picker-' + time];
 }
 
 function printCheckedToms(res, code) {
@@ -48,8 +55,8 @@ function printCheckedToms(res, code) {
         title: '',
         html: `<div class="get-checked-data-admin">
                                <p>Film Name: <strong>${res.film}</strong> </p>
-                               <p>From: <strong>${(new Date(res.date.start)).toLocaleString()}</strong></p>
-                               <p>To: <strong>${(new Date(res.date.end)).toLocaleString()}</strong></p>
+                               <p>From: <strong>${res.date.start}</strong></p>
+                               <p>To: <strong>${res.date.end}</strong></p>
                                <p>Film Card: <strong>${res.card}</strong> </p>
                                <p>line: <strong>${res.line}</strong> chair: <strong>${res.chair}</strong> </p>
                            </div>`,
@@ -91,15 +98,46 @@ httpGetGenre.open('GET', window.location.origin + '/admin/genres', false);
 httpGetGenre.send();
 var genres = JSON.parse(httpGetGenre.response);
 $(document).ready(function () {
+    $('.dataPicker').dateRangePicker({
+        startOfWeek: 'monday',
+        separator: ' - ',
+        format: 'DD.MM.YYYY HH:mm',
+        autoClose: false,
+        time: {
+            enabled: true
+        }
+    }).bind('datepicker-change', function (event, object) {
+        if (object.value.length === 35) {
+            fetch(window.location.origin + '/admin/search?date' + object.value, {
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-Requested-With": "XMLHttpRequest",
+                    "X-CSRF-Token": $('meta[name="csrf_token"]').attr('content')
+                },
+                method: 'get'
+            }).then(response => {
+                return response.json();
+            }).then((res) => {
+                if (res.success) {
+
+                }
+            });
+        }
+    })
+
+
     $('#dataTableFilmsList').DataTable();
+
     $(document).on('click', '.add-new-film', function () {
         if (click) {
             click = false;
             $('#exampleModalCenter .modal-body *').remove();
             $('#exampleModalCenter .modal-footer').removeClass('d-none');
             $('#exampleModalCenter #exampleModalLongTitle').text('New Film');
+            $('#exampleModalCenter .append-content-modal').append(addFilmContent()[0]);
+            $(".checked-jquery-ui input").checkboxradio();
             $('#exampleModalCenter').modal('show');
-            $('#exampleModalCenter .append-content-modal').append(addFilmContent());
             setTimeout(function () {
                 click = true;
             }, 300);
@@ -116,7 +154,27 @@ $(document).ready(function () {
             setTimeout(function () {
                 click = true;
             }, 300);
-            $('#exampleModalCenter .modal-body .append-new-date-input').append(addNewDate())
+            let datePicker = addNewDate();
+            $('#exampleModalCenter .modal-body .append-new-date-input').append(datePicker[0])
+            $(`.${datePicker[1]}`).dateRangePicker({
+                startDate: new Date(),
+                selectForward: true,
+                beforeShowDay: function (t) {
+                    let valid = !(t.getDay() == 0 || t.getDay() == 7);
+                    let _class = '';
+                    let _tooltip = valid ? '' : 'sold out';
+                    return [valid, _class, _tooltip];
+                },
+                startOfWeek: 'monday',
+                separator: ' - ',
+                format: 'DD.MM.YYYY HH:mm',
+                autoClose: false,
+                time: {
+                    enabled: true
+                },
+                defaultTime: moment().startOf('day').toDate(),
+                defaultEndTime: moment().endOf('day').toDate(),
+            });
         }
     });
     $(document).on('click', '.click-save-add-or-update-film', function () {
@@ -151,8 +209,8 @@ $(document).ready(function () {
                         film_id = item.value
                         break;
                 }
-                if (item.name === 'start_date[]' && form[i + 1].value.length > 0) {
-                    dateArr.push(item.value + ' - ' + form[i + 1].value)
+                if (item.name === 'date-to-date[]' && item.value.length === 35) {
+                    dateArr.push(item.value)
                 }
             });
             formData.append('date', JSON.stringify(dateArr));
@@ -253,8 +311,31 @@ $(document).ready(function () {
             }).then((res) => {
                 if (res.success) {
                     $('#exampleModalCenter #exampleModalLongTitle').html(`<span>Update <strong>(${res.data.name})</strong> Film</span>`)
+                    let dateAppend = addFilmContent(res.data.name, res.data.description, res.data.get_date, res.data.id, res.data.get_genre)
+                    $('#exampleModalCenter .append-content-modal').append(dateAppend[0]);
+                    $.each(dateAppend[1], function (i, item) {
+                        $(`.${item}`).dateRangePicker({
+                            startDate: new Date(),
+                            selectForward: true,
+                            beforeShowDay: function (t) {
+                                let valid = !(t.getDay() == 0 || t.getDay() == 7);
+                                let _class = '';
+                                let _tooltip = valid ? '' : 'sold out';
+                                return [valid, _class, _tooltip];
+                            },
+                            startOfWeek: 'monday',
+                            separator: ' - ',
+                            format: 'DD.MM.YYYY HH:mm',
+                            autoClose: false,
+                            time: {
+                                enabled: true
+                            },
+                            defaultTime: moment().startOf('day').toDate(),
+                            defaultEndTime: moment().endOf('day').toDate(),
+                        })
+                    })
+                    $(".checked-jquery-ui input").checkboxradio();
                     $('#exampleModalCenter').modal('show')
-                    $('#exampleModalCenter .append-content-modal').append(addFilmContent(res.data.name, res.data.description, res.data.get_date, res.data.id))
                 }
             });
         }
@@ -285,7 +366,7 @@ $(document).ready(function () {
                                                                            </select>
                                                                            <table class="costume_table"></table>`);
                         $.each(res.data.get_date, function (i, item) {
-                            $('#exampleModalCenter .append-content-modal .get-checked-lists').append(`<option value="${item.id}">${(new Date(item.start_date)).toLocaleString()} to ${(new Date(item.end_date)).toLocaleString()}</option>`)
+                            $('#exampleModalCenter .append-content-modal .get-checked-lists').append(`<option value="${item.id}">${item.start_date} to ${item.end_date}</option>`)
                         })
                     } else {
                         Swal.fire({
@@ -356,8 +437,8 @@ $(document).ready(function () {
                     title: '',
                     html: `<div class="get-checked-data-admin">
                                <p>Film Name: <strong>${res.film}</strong> </p>
-                               <p>From: <strong>${(new Date(res.date.start)).toLocaleString()}</strong></p>
-                               <p>To: <strong>${(new Date(res.date.end)).toLocaleString()}</strong></p>
+                               <p>From: <strong>${res.date.start}</strong></p>
+                               <p>To: <strong>${res.date.end}</strong></p>
                                <p>Film Card: <strong>${res.card}</strong> </p>
                                <p>line: <strong>${res.line}</strong> chair: <strong>${res.chair}</strong> </p>
                            </div>`,

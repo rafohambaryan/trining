@@ -5,6 +5,7 @@ namespace App\Repository\Backend;
 
 
 use App\Models\DateFilm;
+use App\Models\GenreFilm;
 use App\Repository\Backend\Interfaces\FilmRepositoryInterfaces;
 use App\Service\Backend\DateFilmService;
 use App\Service\Backend\FilmService;
@@ -56,6 +57,16 @@ class FilmRepository implements FilmRepositoryInterfaces
         $film->description = $description ? $description : ' ';
         $film->user_id = Auth::id();
         $film->save();
+        $genre = $data['genre'] ?? [];
+        GenreFilm::where('film_id', $film->id)->delete();
+        foreach ($genre as $i) {
+            $genres = new GenreFilm();
+            $genres->film_id = $film->id;
+            $genres->genre_id = $i;
+            $genres->save();
+        }
+
+
         $date = json_decode($data['date']);
         if (isset($date) && !empty($date)) {
             $dateOld = DateFilmService::getByFilmId($id);

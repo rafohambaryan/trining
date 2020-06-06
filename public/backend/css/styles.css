@@ -6037,7 +6037,7 @@ a.close.disabled {
 
 @media (min-width: 576px) {
     .modal-dialog {
-        max-width: 70%;
+        max-width: 500px;
         margin: 1.75rem auto;
     }
 
@@ -10860,12 +10860,12 @@ body {
     justify-content: flex-start;
 }
 
-.add-new-date div {
-    width: 40%;
-}
+/*.add-new-date div {*/
+/*    width: 40%;*/
+/*}*/
 
-.add-new-date div:nth-child(3) {
-    margin-left: 10%;
+.add-new-date div:nth-child(2) {
+   margin: 6px 0 0 21px;
 }
 
 .crud-costume {
@@ -10988,12 +10988,21 @@ body {
 }
 
 .genre-films div {
-    margin: 5px 8px;
-    padding: 1px 10px;
-    border: 1px solid black;
-    border-radius: 5px;
+    margin: 8px;
 }
 
 .genre-films div label {
     margin: 0 !important;
+}
+.dataPicker{
+    width: 300px;
+    border-radius: 5px;
+    padding: 3px 21px;
+    border: 1px solid #3f3fff;
+}
+.date-picker-class-css{
+    width: 300px;
+    border-radius: 5px;
+    padding: 3px 21px;
+    border: 1px solid #3f3fff;
 }

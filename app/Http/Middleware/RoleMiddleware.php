@@ -17,6 +17,6 @@ class RoleMiddleware
     {
         if (Auth::check() && in_array(Auth::user()->role, $role))
             return $next($request);
-        return response(view('errors.404'));
+        return response(view('errors.404'),404);
     }
 }

@@ -56,5 +56,5 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
 
 
 Route::fallback(function () {
-    return response(view('errors.404'));
+    return response(view('errors.404'),404);
 });

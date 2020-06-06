@@ -7,11 +7,16 @@ use Illuminate\Database\Eloquent\Model;
 class Film extends Model
 {
     protected $fillable = [
-        'user_id', 'name', 'description','genre'
+        'user_id', 'name', 'description'
     ];
 
     public function getDate()
     {
         return $this->hasMany(DateFilm::class, 'film_id', 'id');
+    }
+
+    public function getGenre()
+    {
+        return $this->hasMany(GenreFilm::class, 'film_id', 'id');
     }
 }

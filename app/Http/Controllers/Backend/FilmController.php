@@ -55,7 +55,7 @@ class FilmController extends Controller
     {
         $film = $this->interfaces->find($id);
         if ($film) {
-            return response()->json(['success' => true, 'data' => $film->load('getDate')]);
+            return response()->json(['success' => true, 'data' => $film->load('getDate','getGenre')]);
         }
         return response()->json(['success' => false]);
     }
