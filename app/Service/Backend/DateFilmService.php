@@ -28,4 +28,9 @@ class DateFilmService extends DateFilm
     {
         return parent::find($id);
     }
+
+    public function searchDate($start, $end)
+    {
+        return parent::where('start_date', '>=', $start)->where('end_date', '<=', $end)->select(['film_id as id'])->get();
+    }
 }

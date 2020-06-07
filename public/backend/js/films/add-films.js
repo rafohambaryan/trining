@@ -101,14 +101,14 @@ $(document).ready(function () {
     $('.dataPicker').dateRangePicker({
         startOfWeek: 'monday',
         separator: ' - ',
-        format: 'DD.MM.YYYY HH:mm',
+        format: 'YYYY.MM.DD HH:mm',
         autoClose: false,
         time: {
             enabled: true
         }
     }).bind('datepicker-change', function (event, object) {
         if (object.value.length === 35) {
-            fetch(window.location.origin + '/admin/search?date' + object.value, {
+            fetch(window.location.origin + `/search?date=${object.value}`, {
                 headers: {
                     "Content-Type": "application/json",
                     "Accept": "application/json",
@@ -119,9 +119,10 @@ $(document).ready(function () {
             }).then(response => {
                 return response.json();
             }).then((res) => {
-                if (res.success) {
-
-                }
+                $('#dataTableFilmsList tbody tr').addClass('d-none');
+                $.each(res,function (i,item) {
+                    $(`#dataTableFilmsList tbody tr[data-id=${item}]`).removeClass('d-none');
+                })
             });
         }
     })
@@ -159,15 +160,9 @@ $(document).ready(function () {
             $(`.${datePicker[1]}`).dateRangePicker({
                 startDate: new Date(),
                 selectForward: true,
-                beforeShowDay: function (t) {
-                    let valid = !(t.getDay() == 0 || t.getDay() == 7);
-                    let _class = '';
-                    let _tooltip = valid ? '' : 'sold out';
-                    return [valid, _class, _tooltip];
-                },
                 startOfWeek: 'monday',
                 separator: ' - ',
-                format: 'DD.MM.YYYY HH:mm',
+                format: 'YYYY.MM.DD HH:mm',
                 autoClose: false,
                 time: {
                     enabled: true
@@ -317,15 +312,9 @@ $(document).ready(function () {
                         $(`.${item}`).dateRangePicker({
                             startDate: new Date(),
                             selectForward: true,
-                            beforeShowDay: function (t) {
-                                let valid = !(t.getDay() == 0 || t.getDay() == 7);
-                                let _class = '';
-                                let _tooltip = valid ? '' : 'sold out';
-                                return [valid, _class, _tooltip];
-                            },
                             startOfWeek: 'monday',
                             separator: ' - ',
-                            format: 'DD.MM.YYYY HH:mm',
+                            format: 'YYYY.MM.DD HH:mm',
                             autoClose: false,
                             time: {
                                 enabled: true
