@@ -54,15 +54,6 @@ $(document).ready(function () {
                     })
                 })
                 app.set('checked', res.checked);
-                main.append(select('film-checked-lines', 'line', 'film_checked_lines_select', 'Selected Lines'))
-                main.append(select('film-checked-lines-count d-none', 'count', 'film-checked-lines-count', 'Selected Chair'))
-
-                $.each(res.lines, function (i, item) {
-                    $('.film-checked-lines select').append(`<option value="${item.id}">${item.name} - ${item.order}</option>`);
-                    $.each(item.counter, function (j, count) {
-                        $('.film-checked-lines-count select').append(`<option value="${count.id}" data-line-id="${item.id}" class="d-none">${count.order}</option>`);
-                    })
-                });
             }
         }
     });

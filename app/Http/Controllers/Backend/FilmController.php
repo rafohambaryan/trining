@@ -38,7 +38,7 @@ class FilmController extends Controller
      */
     public function createOrUpdate(Request $request, $id = 0)
     {
-        $film = $this->interfaces->createOrUpdate($request->all(), $id);
+        $film = $this->interfaces->createOrUpdate($request, $id);
         $response['success'] = false;
         if ($film) {
             $response['success'] = true;

@@ -4,6 +4,8 @@
 namespace App\Repository\Backend\Interfaces;
 
 
+use App\Models\Film;
+
 interface FilmRepositoryInterfaces
 {
     /**
@@ -18,11 +20,11 @@ interface FilmRepositoryInterfaces
     public function get();
 
     /**
-     * @param $data
+     * @param $request
      * @param $id
      * @return mixed
      */
-    public function createOrUpdate($data, $id);
+    public function createOrUpdate($request, $id): Film;
 
     /**
      * @param $id

@@ -1,4 +1,4 @@
-function addFilmContent(name = '', description = '', data = [], id = 0, genre = []) {
+function addFilmContent(name = '', description = '', data = [], id = 0, genre = [], img = window.location.origin + '/images/img/default.jpg', price = '', unit_id = 1) {
     let date_film = '';
     let datePickerArray = [];
     $.each(data, function (i, item) {
@@ -17,6 +17,10 @@ function addFilmContent(name = '', description = '', data = [], id = 0, genre = 
                            <input type="checkbox" name="genre[]" id="genre-${genres[i].id}" value="${genres[i].id}" ${genreArr.includes(genres[i].id) ? 'checked' : ''}>
                        </div>`;
     }
+    let unitHtmlOptions = '';
+    $.each(units, function (i, item) {
+        unitHtmlOptions += `<option value="${item.id}" ${item.id === unit_id ? 'selected' : ''}>${item.name}</option>`
+    })
     let html = `<form class="form-update-or-create">
                 <input type="hidden" value="${id}" name="film_id">
                 <div>
@@ -24,8 +28,34 @@ function addFilmContent(name = '', description = '', data = [], id = 0, genre = 
                           ${genresHtml}
                         <hr>
                     </div>
-                    <input type="text" placeholder="Film name" name="name" value="${name}" class="name form-control" />
-                    <textarea placeholder="Film description" name="description" class="name form-control mt-2">${description}</textarea>
+                    <div class="row">
+                        <div class="col-10">
+                             <input type="text" placeholder="Film name" name="name" value="${name}" class="name form-control" />
+                             <textarea placeholder="Film description" name="description" class="name form-control mt-2">${description}</textarea>
+                              <div class="row mt-2">
+                                  <div class="col-4">
+                                        <select class="form-control" name="unit">
+                                            ${unitHtmlOptions}
+                                        </select>
+                                  </div>
+                                  <div class="col-8">
+                                        <input type="number" placeholder="Film price" name="price" value="${price}" class="name form-control" />
+                                  </div>
+
+                              </div>
+
+                        </div>
+                        <div class="col-2 append-image-film-div">
+                            <img src="${img}"  alt="" class="image-upload-or-delete-film-width">
+                            <div>
+                            <label for="upload-image-film" class="mt-3 mb-0">
+                                 <i class="fas fa-upload color-green-upload-image"></i>
+                            </label>
+                            <input type="file" hidden id="upload-image-film" accept=".jpg, .jpeg, .png">
+                                <i class="far fa-trash-alt click-remove-image-film"></i>
+                            </div>
+                        </div>
+                    </div>
                     <div class="mt-3 append-new-date-input">
                         <span class="">Add date film  <i class="far fa-calendar-plus add-new-date-line-film"></i></span>
                          <hr>
@@ -96,7 +126,10 @@ var click = true;
 var httpGetGenre = new XMLHttpRequest();
 httpGetGenre.open('GET', window.location.origin + '/genres', false);
 httpGetGenre.send();
-var genres = JSON.parse(httpGetGenre.response);
+var responseData = JSON.parse(httpGetGenre.response);
+var genres = responseData.genre;
+var units = responseData.units;
+var formDataCreateOrUpdate = new FormData();
 $(document).ready(function () {
     $('.dataPicker').dateRangePicker({
         startOfWeek: 'monday',
@@ -120,7 +153,7 @@ $(document).ready(function () {
                 return response.json();
             }).then((res) => {
                 $('#dataTableFilmsList tbody tr').addClass('d-none');
-                $.each(res,function (i,item) {
+                $.each(res, function (i, item) {
                     $(`#dataTableFilmsList tbody tr[data-id=${item}]`).removeClass('d-none');
                 })
             });
@@ -181,15 +214,14 @@ $(document).ready(function () {
             let form = $('.form-update-or-create').serializeArray();
             let valid = true;
             let dateArr = [];
-            var formData = new FormData();
             let film_id = 0;
             $.each(form, function (i, item) {
                 switch (item.name) {
                     case 'genre[]':
-                        formData.append('genre[]', item.value)
+                        formDataCreateOrUpdate.append('genre[]', item.value)
                         break;
                     case 'name':
-                        formData.append('name', item.value)
+                        formDataCreateOrUpdate.append('name', item.value)
                         if (item.value.length === 0) {
                             $(`input[name=${item.name}]`).addClass('add-error-border')
                             valid = false
@@ -198,28 +230,33 @@ $(document).ready(function () {
                         }
                         break;
                     case 'description':
-                        formData.append('description', item.value)
+                        formDataCreateOrUpdate.append('description', item.value)
                         break;
                     case 'film_id':
                         film_id = item.value
                         break;
-                }
-                if (item.name === 'date-to-date[]' && item.value.length === 35) {
-                    dateArr.push(item.value)
+                    case 'date-to-date[]':
+                        if (item.value.length === 35) {
+                            dateArr.push(item.value)
+                        }
+                        break
+                    default:
+                        formDataCreateOrUpdate.append(item.name, item.value)
                 }
             });
-            formData.append('date', JSON.stringify(dateArr));
+            formDataCreateOrUpdate.append('date', JSON.stringify(dateArr));
             if (valid) {
                 fetch(window.location.origin + '/admin/films/' + film_id, {
                     headers: {
                         "X-CSRF-Token": $('meta[name="csrf_token"]').attr('content')
                     },
-                    body: formData,
+                    body: formDataCreateOrUpdate,
                     method: 'POST'
                 }).then(response => {
                     return response.json();
                 }).then((res) => {
                     if (res.success) {
+                        formDataCreateOrUpdate = new FormData();
                         if (film_id > 0) {
                             let content = $(`#dataTableFilmsList tbody .card-film-tr[data-id=${film_id}]`)
                             content.addClass('bg-green')
@@ -306,7 +343,7 @@ $(document).ready(function () {
             }).then((res) => {
                 if (res.success) {
                     $('#exampleModalCenter #exampleModalLongTitle').html(`<span>Update <strong>(${res.data.name})</strong> Film</span>`)
-                    let dateAppend = addFilmContent(res.data.name, res.data.description, res.data.get_date, res.data.id, res.data.get_genre)
+                    let dateAppend = addFilmContent(res.data.name, res.data.description, res.data.get_date, res.data.id, res.data.get_genre, res.data.image ? window.location.origin + '/images/uploads/' + res.data.image : window.location.origin + '/images/img/default.jpg', res.data.price, res.data.unit_id)
                     $('#exampleModalCenter .append-content-modal').append(dateAppend[0]);
                     $.each(dateAppend[1], function (i, item) {
                         $(`.${item}`).dateRangePicker({
@@ -560,5 +597,45 @@ $(document).ready(function () {
                 },
             },
         });
+    });
+    $(document).on('click', '.append-image-film-div img', function () {
+        let path = $(this).attr('src');
+        Swal.fire({
+            title: '',
+            html: `<div><img src="${path}" alt="" width="100%"></div>`,
+            showConfirmButton: false,
+        });
+    });
+    $(document).on('click', '.click-remove-image-film', function () {
+        let img = $('.image-upload-or-delete-film-width');
+        img.removeAttr('src');
+        formDataCreateOrUpdate.delete('file');
+        formDataCreateOrUpdate.delete('isFile');
+        formDataCreateOrUpdate.append('isFile', '0');
+        img.attr('src', window.location.origin + '/images/img/default.jpg');
+    });
+    $(document).on('change', '#upload-image-film', function (e) {
+        e.propertyIsEnumerable(e);
+        let img = $('.image-upload-or-delete-film-width');
+        try {
+            formDataCreateOrUpdate.delete('file');
+            formDataCreateOrUpdate.delete('isFile');
+            let fileExt = this.files[0].name.split('.');
+            if (['jpg', 'JPG', 'JPEG', 'jpeg', 'png', 'PNG'].includes(fileExt[fileExt.length - 1])) {
+                formDataCreateOrUpdate.append('file', this.files[0]);
+                formDataCreateOrUpdate.append('isFile', '1');
+                img.removeAttr('src');
+                img.attr('src', URL.createObjectURL(this.files[0]));
+            } else {
+                Swal.fire({
+                    'icon': 'error',
+                    html: 'not valid images( jpg , jpeg , png )',
+                    showConfirmButton: false,
+                })
+            }
+        } catch (e) {
+            formDataCreateOrUpdate.append('isFile', '0');
+            img.attr('src', window.location.origin + '/images/img/default.jpg');
+        }
     });
 });

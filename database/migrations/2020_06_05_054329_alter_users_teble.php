@@ -14,7 +14,7 @@ class AlterUsersTeble extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('role', 30)->index()->default('user')->after('id');
+            $table->string('role', 30)->index()->default('client')->after('id');
             $table->foreign('role')->references('status')->on('roles')->onUpdate('CASCADE')->onDelete('CASCADE');
         });
     }

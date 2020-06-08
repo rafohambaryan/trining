@@ -6037,7 +6037,7 @@ a.close.disabled {
 
 @media (min-width: 576px) {
     .modal-dialog {
-        max-width: 70%;
+        max-width: 567px;
         margin: 1.75rem auto;
     }
 
@@ -11005,4 +11005,32 @@ body {
     border-radius: 5px;
     padding: 4px 21px;
     border: 1px solid #3f3fff;
+}
+.append-image-film-div img{
+    width: 50px;
+    height: 50px;
+    margin: 0 auto;
+    cursor: zoom-in;
+}
+.append-image-film-div{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+}
+.append-image-film-div div button{
+    background-color: transparent;
+    border: none;
+}
+.append-image-film-div div{
+    display: flex;
+    justify-content: space-around;
+}
+.click-remove-image-film{
+    color: red;
+    cursor: pointer;
+    margin-top: 20px;
+}
+.color-green-upload-image{
+    cursor: pointer;
+    color: #1c7430;
 }

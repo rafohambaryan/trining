@@ -4,12 +4,15 @@
 namespace App\Repository\Backend;
 
 
+use App\Helpers\Hash;
 use App\Models\DateFilm;
+use App\Models\Film;
 use App\Models\GenreFilm;
 use App\Repository\Backend\Interfaces\FilmRepositoryInterfaces;
 use App\Service\Backend\DateFilmService;
 use App\Service\Backend\FilmService;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\File;
 
 class FilmRepository implements FilmRepositoryInterfaces
 {
@@ -44,15 +47,35 @@ class FilmRepository implements FilmRepositoryInterfaces
     }
 
     /**
-     * @param $data
+     * @param $request
      * @param $id
      * @return mixed
      */
-    public function createOrUpdate($data, $id)
+    public function createOrUpdate($request, $id): Film
     {
+        $data = $request->all();
         $name = $data['name'];
+        $price = $data['price'];
+        $unit_id = $data['unit'];
         $description = $data['description'];
         $film = $this->service->firstOrNew($id, Auth::id());
+        if ($request->has('isFile') && $request->input('isFile') === '0') {
+            goto deleteImg;
+        }
+        if ($request->has('isFile') && $request->input('isFile') === '1' && $request->has('file')) {
+            $file = $request->file('file');
+            $path_image = Hash::unique($film, 'image') . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path("images\uploads"), $path_image);
+            deleteImg:
+            if ($film->exists) {
+                if (file_exists(public_path("images\uploads\\$film->image"))) {
+                    File::delete(public_path("images\uploads\\$film->image"));
+                }
+            }
+            $film->image = $path_image ?? null;
+        }
+        $film->price = $price ?? 0;
+        $film->unit_id = $unit_id ?? 1;
         $film->name = $name;
         $film->description = $description ? $description : ' ';
         $film->user_id = Auth::id();
@@ -129,6 +152,11 @@ class FilmRepository implements FilmRepositoryInterfaces
     public function deleted($id)
     {
         $film = $this->service->find($id);
+        if ($film->exists) {
+            if (file_exists(public_path("images\uploads\\$film->image"))) {
+                File::delete(public_path("images\uploads\\$film->image"));
+            }
+        }
         return ['success' => $film->delete()];
     }
 }
