@@ -43,16 +43,15 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
         //Checked controller
         Route::post('/get-checked', 'CheckedController@getChecked');
 
-        //Genre Controller
-        Route::get('/genres','GenreController@get');
-
-
         //Setting controller
         Route::group(['middleware' => 'role:admin', 'as' => 'settings.'], function () {
             Route::get('/setting', 'SettingController@index')->name('index');
         });
     });
+    //Search Controller
     Route::get('/search','SearchController@searchDate');
+    //Genre Controller
+    Route::get('/genres','Backend\GenreController@get');
 });
 
 

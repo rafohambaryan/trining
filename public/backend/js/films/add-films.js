@@ -94,7 +94,7 @@ function printCheckedToms(res, code) {
 var app = new Map();
 var click = true;
 var httpGetGenre = new XMLHttpRequest();
-httpGetGenre.open('GET', window.location.origin + '/admin/genres', false);
+httpGetGenre.open('GET', window.location.origin + '/genres', false);
 httpGetGenre.send();
 var genres = JSON.parse(httpGetGenre.response);
 $(document).ready(function () {
