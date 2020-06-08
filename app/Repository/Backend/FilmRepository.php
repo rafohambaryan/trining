@@ -65,7 +65,7 @@ class FilmRepository implements FilmRepositoryInterfaces
         if ($request->has('isFile') && $request->input('isFile') === '1' && $request->has('file')) {
             $file = $request->file('file');
             $path_image = Hash::unique($film, 'image') . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path("images\uploads"), $path_image);
+            $file->move(public_path("/images/uploads/"), $path_image);
             deleteImg:
             if ($film->exists) {
                 if (file_exists(public_path("images\uploads\\$film->image"))) {
