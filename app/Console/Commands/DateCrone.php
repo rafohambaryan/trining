@@ -41,10 +41,9 @@ class DateCrone extends Command
         $filmsAllDate = DateFilm::all();
         $date = new \DateTime();
         $date->setTimezone(new \DateTimeZone('Asia/Yerevan'));
-        $nowDate = $date->format('Y-m-d H:i:s');
+        $nowDate = $date->format('Y.m.d H:i');
         foreach ($filmsAllDate as $index => $item) {
-            $oldDate = (new \DateTime($item->start_date))->format('Y-m-d H:i:s');
-            if ($nowDate >= $oldDate && $item->status === 'active') {
+            if ($nowDate >= $item->start_date && $item->status === 'active') {
                 $item->status = 'passive';
                 $item->save();
                 foreach ($item->checked as $check) {

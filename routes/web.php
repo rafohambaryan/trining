@@ -59,4 +59,3 @@ Route::group(['middleware' => 'throttle:60,1'], function () {
 Route::fallback(function () {
     return response(view('errors.404'),404);
 });
-//dd('17.06.2020 08:45' > '15.11.2025 13:37');
