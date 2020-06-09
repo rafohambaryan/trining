@@ -31,8 +31,7 @@ class CheckedController extends Controller
      */
     public function getChecked(Request $request)
     {
-        $list = Event::dispatch(new CheckedEvent(
-            'getOneChecked', $request->all()), true, true);
+        $list = Event::dispatch(new CheckedEvent('getOneChecked', $request->all()), true, true);
         $data['success'] = false;
         if ($list) {
             $data = $this->getToms($list);
