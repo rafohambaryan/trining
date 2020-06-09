@@ -2,27 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\Hash;
-use App\Models\Checked;
-use App\Models\DateFilm;
-use App\Models\Film;
-use App\Models\Line;
+use App\Events\FilmEvent;
+use App\Events\LineEvent;
 use App\Repository\Backend\Interfaces\CheckedRepositoryInterfaces;
 use App\Repository\Backend\Interfaces\DateFilmRepositoryInterfaces;
-use App\Repository\Backend\Interfaces\FilmRepositoryInterfaces;
-use App\Repository\Backend\Interfaces\LineRepositoryInterfaces;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 
 class FilmController extends Controller
 {
-    /**
-     * @var FilmRepositoryInterfaces
-     */
-    protected $film;
-    /**
-     * @var LineRepositoryInterfaces
-     */
-    protected $line;
     /**
      * @var DateFilmRepositoryInterfaces
      */
@@ -34,18 +22,12 @@ class FilmController extends Controller
 
     /**
      * FilmController constructor.
-     * @param FilmRepositoryInterfaces $film
-     * @param LineRepositoryInterfaces $line
      * @param DateFilmRepositoryInterfaces $dateFilm
      * @param CheckedRepositoryInterfaces $checked
      */
-    public function __construct(FilmRepositoryInterfaces $film,
-                                LineRepositoryInterfaces $line,
-                                DateFilmRepositoryInterfaces $dateFilm,
+    public function __construct(DateFilmRepositoryInterfaces $dateFilm,
                                 CheckedRepositoryInterfaces $checked)
     {
-        $this->film = $film;
-        $this->line = $line;
         $this->dateFilm = $dateFilm;
         $this->checked = $checked;
     }
@@ -55,9 +37,9 @@ class FilmController extends Controller
      */
     public function index()
     {
-        $films = $this->film->get();
-        $lines = $this->line->get();
-        return view('films', compact('films', 'lines'));
+        $films = Event::dispatch(new FilmEvent('get'), true, true);
+        $lines = Event::dispatch(new LineEvent('get'), true, true);
+        return view('films', ['films' => $films, 'lines' => $lines]);
     }
 
     /**
@@ -67,7 +49,8 @@ class FilmController extends Controller
     public function getFilm(Request $request)
     {
         $film_id = $request->input('film_id');
-        $film = $this->film->find($film_id);
+        $film = Event::dispatch(new FilmEvent('find', $film_id), true, true);
+
         if ($film) {
             $film_date = [];
             foreach ($film->getDate as $index => $item) {
@@ -89,7 +72,8 @@ class FilmController extends Controller
     public function getFilmDate(Request $request)
     {
         $date_id = $request->input('date_id');
-        $lines = $this->line->get()->load('counter');
+        $lines = Event::dispatch(new LineEvent('get'), true, true)->load('counter');
+
         return response()->json(['success' => true, 'lines' => $lines, 'checked' => $this->dateFilm->getFilmData($date_id)]);
     }
 }

@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Events\CheckedEvent;
+use App\Events\FilmEvent;
 use App\Repository\Backend\Interfaces\CheckedRepositoryInterfaces;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Event;
 
 class CheckedController extends Controller
 {
@@ -28,7 +31,8 @@ class CheckedController extends Controller
      */
     public function getChecked(Request $request)
     {
-        $list = $this->interfaces->getOneChecked($request->all());
+        $list = Event::dispatch(new CheckedEvent(
+            'getOneChecked', $request->all()), true, true);
         $data['success'] = false;
         if ($list) {
             $data = $this->getToms($list);

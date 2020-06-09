@@ -18,7 +18,9 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+
     ];
+
 
     /**
      * Register any events for your application.
@@ -27,10 +29,15 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $models = glob(app_path('Models') . '/' . '*.php');
+        foreach ($models as $index => $item) {
+            $model = pathinfo($item, PATHINFO_FILENAME);
+            if (file_exists(app_path("Events/{$model}Event.php")) &&
+                file_exists(app_path("Listeners/{$model}EventListener.php"))) {
+                $this->listen["App\Events\\{$model}Event"] = ["App\Listeners\\{$model}EventListener"];
+            }
+        }
         parent::boot();
-//        Event::listen('event.name', function () {
-//        });
-
         //
     }
 }
