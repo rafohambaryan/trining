@@ -20,6 +20,11 @@ interface FilmRepositoryInterfaces
     public function get();
 
     /**
+     * @return mixed
+     */
+    public function getAuth();
+
+    /**
      * @param $request
      * @param $id
      * @return mixed

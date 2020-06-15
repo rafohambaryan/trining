@@ -45,6 +45,10 @@ class FilmRepository implements FilmRepositoryInterfaces
     {
         return $this->service->getAll();
     }
+    public function getAuth()
+    {
+        return $this->service->getAuth();
+    }
 
     /**
      * @param $request

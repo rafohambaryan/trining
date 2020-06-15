@@ -14,7 +14,7 @@ class FilmController extends Controller
      */
     public function films()
     {
-        return view('backend.films', ['films' => Event::dispatch(new FilmEvent('get'), true, true)]);
+        return view('backend.films', ['films' => Event::dispatch(new FilmEvent('getAuth'), true, true)]);
     }
 
     /**

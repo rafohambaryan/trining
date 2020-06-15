@@ -5,6 +5,7 @@ namespace App\Service\Backend;
 
 
 use App\Models\Film;
+use Illuminate\Support\Facades\Auth;
 
 class FilmService extends Film
 {
@@ -16,6 +17,11 @@ class FilmService extends Film
     public function getAll()
     {
         return $this->all();
+    }
+
+    public function getAuth()
+    {
+        return parent::where('user_id', Auth::id())->get();
     }
 
     /**

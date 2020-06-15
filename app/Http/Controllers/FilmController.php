@@ -37,6 +37,11 @@ class FilmController extends Controller
      */
     public function index()
     {
+//        $im = imagecreatefromwebp(public_path('images/test.webp'));
+//
+//        imagejpeg($im, public_path('images/test.png'), 100);
+//        imagedestroy($im);
+//        dd(4);
         $films = Event::dispatch(new FilmEvent('get'), true, true);
         $lines = Event::dispatch(new LineEvent('get'), true, true);
         return view('films', ['films' => $films, 'lines' => $lines]);
